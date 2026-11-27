@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOOTHお会計ブックマークレット</title>
+<meta name="description" content="VRChatのお店で出たお会計コードを貼ると、選んだ商品がBOOTHのカートに入るブックマークレット">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ff5fa2; --pink-d: #e04387; --pink-l: #ffe3ef; --bg: #fff8fb; --card: #ffffff;
+    --text: #3d2430; --muted: #8b6878; --line: #f6d3e2; --ok: #2f9e6e; --shadow: 0 10px 30px rgba(224, 67, 135, .12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #23161c; --card: #2f1e26; --text: #fbe9f1; --muted: #c9a3b4; --line: #4a2e3b; --pink-l: #45263a; --ok: #6fd3a5;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif; line-height: 1.85; font-size: 16px; }
+  a { color: var(--pink-d); }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+
+  header { background: linear-gradient(160deg, #ff8cbc 0%, #ff5fa2 55%, #f04a92 100%); color: #fff; padding: 56px 0 72px; text-align: center; position: relative; overflow: hidden; }
+  header::after { content: ""; position: absolute; left: -10%; right: -10%; bottom: -40px; height: 80px; background: var(--bg); border-radius: 50% 50% 0 0; }
+  .badge { display: inline-block; background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.5); border-radius: 999px; padding: 2px 14px; font-size: .85rem; font-weight: 700; letter-spacing: .05em; }
+  h1 { margin: 14px 0 8px; font-size: clamp(1.7rem, 5vw, 2.4rem); font-weight: 800; line-height: 1.35; }
+  .lead { margin: 0 auto; max-width: 30em; font-size: 1.05rem; opacity: .95; }
+
+  main { position: relative; z-index: 1; margin-top: -24px; padding-bottom: 56px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); padding: 28px 24px; margin-bottom: 22px; }
+  h2 { margin: 0 0 14px; font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+  h2 .num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--pink); color: #fff; display: grid; place-items: center; font-size: 1rem; }
+
+  .install { text-align: center; }
+  .install p { margin: 0 0 6px; }
+  .bar { margin: 18px auto 10px; max-width: 460px; background: var(--pink-l); border: 2px dashed var(--pink); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--muted); text-align: left; }
+  .bar .dots { display: flex; gap: 5px; flex: none; }
+  .bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
+  .arrow { font-size: 1.6rem; color: var(--pink); animation: up 1.4s ease-in-out infinite; line-height: 1; margin: 4px 0; }
+  @keyframes up { 0%, 100% { transform: translateY(4px); } 50% { transform: translateY(-6px); } }
+  @media (prefers-reduced-motion: reduce) { .arrow { animation: none; } }
+  .bm { display: inline-flex; align-items: center; gap: 8px; padding: 16px 34px; background: var(--pink); color: #fff; border-radius: 999px; font-weight: 800; font-size: 1.2rem; text-decoration: none; box-shadow: 0 6px 0 var(--pink-d); cursor: grab; transition: transform .1s; user-select: none; }
+  .bm:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--pink-d); cursor: grabbing; }
+  .hint { color: var(--muted); font-size: .9rem; margin-top: 16px !important; }
+  kbd { font-family: inherit; background: var(--pink-l); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 0 6px; font-size: .85rem; }
+
+  details { margin-top: 18px; text-align: left; border-top: 1px solid var(--line); padding-top: 14px; }
+  summary { cursor: pointer; font-weight: 700; color: var(--pink-d); list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "＋ "; }
+  details[open] summary::before { content: "－ "; }
+  details ol { margin: 10px 0; padding-left: 1.4em; }
+  textarea { width: 100%; height: 5.5em; font: 12px/1.45 ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: var(--bg); color: var(--text); resize: vertical; }
+  .copy { margin-top: 8px; padding: 8px 20px; border: 0; border-radius: 999px; background: var(--pink); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .warn { font-size: .88rem; color: var(--muted); }
+
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .steps li { display: grid; grid-template-columns: 52px 1fr; gap: 14px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; }
+  .steps .ico { width: 52px; height: 52px; border-radius: 16px; background: var(--pink-l); display: grid; place-items: center; font-size: 1.6rem; }
+  .steps b { display: block; font-size: 1.02rem; }
+  .steps span { color: var(--muted); font-size: .92rem; }
+  code { background: var(--pink-l); border-radius: 6px; padding: 0 5px; font-family: ui-monospace, Consolas, monospace; font-size: .9em; }
+
+  .safe { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .safe li { background: var(--bg); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; font-size: .93rem; }
+  .safe li::before { content: "✓"; color: var(--ok); font-weight: 800; margin-right: 6px; }
+
+  .faq details { margin-top: 0; border-top: 0; border-bottom: 1px solid var(--line); padding: 12px 0; }
+  .faq details:last-child { border-bottom: 0; }
+  .faq p { margin: 8px 0 0; color: var(--muted); font-size: .94rem; }
+
+  footer { text-align: center; color: var(--muted); font-size: .82rem; padding: 0 16px 40px; }
+  @media (max-width: 480px) { .card { padding: 22px 18px; } .bm { padding: 14px 26px; font-size: 1.1rem; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="badge">VRChat × BOOTH</span>
+    <h1>🛒 BOOTHお会計<br>ブックマークレット</h1>
+    <p class="lead">VRChatのお店でカゴに入れた商品が、そのままBOOTHのカートに入ります。</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card install">
+    <h2><span class="num">1</span>ブックマークに登録する</h2>
+    <p>はじめの1回だけ。PCのブラウザで、<br>下のボタンを<b>ブックマークバーへドラッグ</b>してください。</p>
+    <div class="bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span>ブックマークバー（ここにドロップ）</div>
+    <div class="arrow" aria-hidden="true">⬆</div>
+    <a class="bm" href="javascript:(async()=&gt;{ if(!/(%5E|%5C.)booth%5C.pm$/.test(location.hostname)){alert(&#x27;BOOTH%E3%81%AE%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const m=document.querySelector(&#x27;meta[name=csrf-token]&#x27;);if(!m){alert(&#x27;BOOTH%E3%81%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%97%E3%81%9F%E7%8A%B6%E6%85%8B%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const code=(prompt(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E8%B2%BC%E3%81%A3%E3%81%A6%E3%81%AD&#x27;)||&#x27;&#x27;).trim();if(!code)return; const p=code.split(&#x27;.&#x27;);if(p[0]!==&#x27;BC1&#x27;||p.length!==3){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E5%BD%A2%E3%81%8C%E3%81%A1%E3%81%8C%E3%81%86%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;} const list=[];let sum=0; for(const g of p[1].split(&#x27;|&#x27;)){const[s,ids]=g.split(&#x27;:&#x27;);if(!/%5E[a-z0-9-]+$/.test(s||&#x27;&#x27;)||!ids){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}for(const x of ids.split(&#x27;,&#x27;)){const v=parseInt(x,36);if(!(v&gt;0)){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}sum+=v;list.push([s,v]);}} if((sum%251296).toString(36).padStart(2,&#x27;0&#x27;)!==p[2]){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E9%80%94%E4%B8%AD%E3%81%A7%E5%88%87%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%8B%E3%82%82%E3%80%82%E3%82%82%E3%81%86%E4%B8%80%E5%BA%A6%E3%82%B3%E3%83%94%E3%83%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} if(list.length&gt;50){alert(&#x27;%E4%B8%80%E5%BA%A6%E3%81%AB%E5%85%A5%E3%82%8C%E3%82%89%E3%82%8C%E3%82%8B%E3%81%AE%E3%81%AF50%E5%80%8B%E3%81%BE%E3%81%A7%E3%81%A0%E3%82%88&#x27;);return;} const box=document.createElement(&#x27;div&#x27;);box.style.cssText=&#x27;position:fixed;z-index:99999;left:50%25;top:30%25;transform:translate(-50%25,-50%25);background:%23fff0f6;border:4px solid %23ff5fa2;border-radius:24px;padding:24px 32px;font:bold 18px sans-serif;color:%23c2185b;box-shadow:0 8px 30px %230004;text-align:center;white-space:pre-line&#x27;;document.body.appendChild(box); let i=0;const shops=[]; for(const[s,v]of list){i++;box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%A6%E3%82%8B%E3%82%88%E2%80%A6 &#x27;+i+&#x27;/&#x27;+list.length;if(!shops.includes(s))shops.push(s); const f=new FormData();f.append(&#x27;_method&#x27;,&#x27;patch&#x27;);f.append(&#x27;cart_item[variation_id]&#x27;,v);f.append(&#x27;authenticity_token&#x27;,m.content); try{await fetch(&#x27;https://&#x27;+s+&#x27;.booth.pm/cart?added_to_cart=true&amp;via=market&#x27;,{method:&#x27;POST&#x27;,body:f,credentials:&#x27;include&#x27;,mode:&#x27;no-cors&#x27;});}catch(e){} await new Promise(r=&gt;setTimeout(r,400));} box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%9F%E3%82%88%EF%BC%81 &#x27;+list.length+&#x27;%E3%81%93%EF%BC%88&#x27;+shops.join(&#x27; / &#x27;)+&#x27;%EF%BC%89%5Cn%E3%82%AB%E3%83%BC%E3%83%88%E3%82%92%E9%96%8B%E3%81%8F%E3%81%AD%E2%80%A6&#x27;; setTimeout(()=&gt;location.href=&#x27;https://booth.pm/carts&#x27;,1500); })();" onclick="alert('このボタンはクリックではなく、ブックマークバーへドラッグして登録してね');return false;">🛒 BOOTHお会計</a>
+    <p class="hint">ブックマークバーが見えないときは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>（Macは <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>）</p>
+    <details>
+      <summary>ドラッグできないとき（手で登録する）</summary>
+      <ol>
+        <li>下の文字をコピーします。</li>
+        <li>ブラウザで新しいブックマークを作り、<b>URLの欄</b>に貼り付けて保存します（名前は自由）。</li>
+      </ol>
+      <textarea id="bmtext" readonly aria-label="ブックマークレット">javascript:(async()=&gt;{ if(!/(%5E|%5C.)booth%5C.pm$/.test(location.hostname)){alert(&#x27;BOOTH%E3%81%AE%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const m=document.querySelector(&#x27;meta[name=csrf-token]&#x27;);if(!m){alert(&#x27;BOOTH%E3%81%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%97%E3%81%9F%E7%8A%B6%E6%85%8B%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const code=(prompt(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E8%B2%BC%E3%81%A3%E3%81%A6%E3%81%AD&#x27;)||&#x27;&#x27;).trim();if(!code)return; const p=code.split(&#x27;.&#x27;);if(p[0]!==&#x27;BC1&#x27;||p.length!==3){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E5%BD%A2%E3%81%8C%E3%81%A1%E3%81%8C%E3%81%86%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;} const list=[];let sum=0; for(const g of p[1].split(&#x27;|&#x27;)){const[s,ids]=g.split(&#x27;:&#x27;);if(!/%5E[a-z0-9-]+$/.test(s||&#x27;&#x27;)||!ids){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}for(const x of ids.split(&#x27;,&#x27;)){const v=parseInt(x,36);if(!(v&gt;0)){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}sum+=v;list.push([s,v]);}} if((sum%251296).toString(36).padStart(2,&#x27;0&#x27;)!==p[2]){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E9%80%94%E4%B8%AD%E3%81%A7%E5%88%87%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%8B%E3%82%82%E3%80%82%E3%82%82%E3%81%86%E4%B8%80%E5%BA%A6%E3%82%B3%E3%83%94%E3%83%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} if(list.length&gt;50){alert(&#x27;%E4%B8%80%E5%BA%A6%E3%81%AB%E5%85%A5%E3%82%8C%E3%82%89%E3%82%8C%E3%82%8B%E3%81%AE%E3%81%AF50%E5%80%8B%E3%81%BE%E3%81%A7%E3%81%A0%E3%82%88&#x27;);return;} const box=document.createElement(&#x27;div&#x27;);box.style.cssText=&#x27;position:fixed;z-index:99999;left:50%25;top:30%25;transform:translate(-50%25,-50%25);background:%23fff0f6;border:4px solid %23ff5fa2;border-radius:24px;padding:24px 32px;font:bold 18px sans-serif;color:%23c2185b;box-shadow:0 8px 30px %230004;text-align:center;white-space:pre-line&#x27;;document.body.appendChild(box); let i=0;const shops=[]; for(const[s,v]of list){i++;box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%A6%E3%82%8B%E3%82%88%E2%80%A6 &#x27;+i+&#x27;/&#x27;+list.length;if(!shops.includes(s))shops.push(s); const f=new FormData();f.append(&#x27;_method&#x27;,&#x27;patch&#x27;);f.append(&#x27;cart_item[variation_id]&#x27;,v);f.append(&#x27;authenticity_token&#x27;,m.content); try{await fetch(&#x27;https://&#x27;+s+&#x27;.booth.pm/cart?added_to_cart=true&amp;via=market&#x27;,{method:&#x27;POST&#x27;,body:f,credentials:&#x27;include&#x27;,mode:&#x27;no-cors&#x27;});}catch(e){} await new Promise(r=&gt;setTimeout(r,400));} box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%9F%E3%82%88%EF%BC%81 &#x27;+list.length+&#x27;%E3%81%93%EF%BC%88&#x27;+shops.join(&#x27; / &#x27;)+&#x27;%EF%BC%89%5Cn%E3%82%AB%E3%83%BC%E3%83%88%E3%82%92%E9%96%8B%E3%81%8F%E3%81%AD%E2%80%A6&#x27;; setTimeout(()=&gt;location.href=&#x27;https://booth.pm/carts&#x27;,1500); })();</textarea>
+      <button class="copy" type="button" onclick="const t=document.getElementById('bmtext');t.select();if(navigator.clipboard)navigator.clipboard.writeText(t.value);this.textContent='コピーしたよ！';">コピー</button>
+      <p class="warn">アドレスバーに貼ると、ブラウザが安全のため先頭の <code>javascript:</code> を消してしまいます。必ずブックマークのURL欄に貼ってください。</p>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2><span class="num">2</span>使いかた</h2>
+    <ol class="steps">
+      <li><span class="ico">🧺</span><div><b>VRChatのお店でカゴに入れる</b><span>ほしい商品をカゴに入れて、レジに置いてお会計。</span></div></li>
+      <li><span class="ico">🧾</span><div><b>お会計コードをコピー</b><span>レシートに出た <code>BC1.</code> ではじまる文字をコピーします。</span></div></li>
+      <li><span class="ico">🌐</span><div><b>BOOTHを開く</b><span>ログインして、BOOTHのどのページでもOK（例：<a href="https://booth.pm/">booth.pm</a>）。</span></div></li>
+      <li><span class="ico">🛒</span><div><b>ブックマークを押してコードを貼る</b><span>商品がカートに入って、カートのページが開きます。あとはいつも通りお買い物！</span></div></li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>安心して使ってもらうために</h2>
+    <ul class="safe">
+      <li>するのは「カートに入れる」ことだけ。購入や支払いはしません</li>
+      <li>通信するのは booth.pm だけ。情報をほかへ送りません</li>
+      <li>壊れたコード・途中で切れたコードでは何もしません</li>
+      <li>一度に入れられるのは50個まで</li>
+    </ul>
+  </section>
+
+  <section class="card faq">
+    <h2>よくある質問</h2>
+    <details><summary>スマホやQuestでも使える？</summary><p>ブックマークレットはPCのブラウザ向けです。スマホでも登録はできますが、操作がむずかしいのでPCがおすすめです。</p></details>
+    <details><summary>押しても何も起きない</summary><p>BOOTH（booth.pm）のページを開いて、ログインした状態で押してください。それ以外のページでは動きません。</p></details>
+    <details><summary>カートに入った商品を取り消したい</summary><p>BOOTHのカートのページで、いつも通り削除できます。</p></details>
+  </section>
+</main>
+
+<footer>BOOTH・ピクシブ株式会社とは関係のない個人のツールです。BOOTHの仕様が変わると動かなくなることがあります。</footer>
+</body>
+</html>
