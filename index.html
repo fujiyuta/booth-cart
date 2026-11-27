@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>BOOTHお会計ブックマークレット</title>
 <meta name="description" content="VRChatのお店で出たお会計コードを貼ると、選んだ商品がBOOTHのカートに入るブックマークレット">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,12 +13,6 @@
   :root {
     --pink: #ff5fa2; --pink-d: #e04387; --pink-l: #ffe3ef; --bg: #fff8fb; --card: #ffffff;
     --text: #3d2430; --muted: #8b6878; --line: #f6d3e2; --ok: #2f9e6e; --shadow: 0 10px 30px rgba(224, 67, 135, .12);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #23161c; --card: #2f1e26; --text: #fbe9f1; --muted: #c9a3b4; --line: #4a2e3b; --pink-l: #45263a; --ok: #6fd3a5;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
-    }
   }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
