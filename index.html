@@ -33,12 +33,22 @@
 
   .install { text-align: center; }
   .install p { margin: 0 0 6px; }
-  .bar { margin: 18px auto 10px; max-width: 460px; background: var(--pink-l); border: 2px dashed var(--pink); border-radius: 14px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; font-size: .9rem; color: var(--muted); text-align: left; }
-  .bar .dots { display: flex; gap: 5px; flex: none; }
-  .bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
-  .arrow { font-size: 1.6rem; color: var(--pink); animation: up 1.4s ease-in-out infinite; line-height: 1; margin: 4px 0; }
-  @keyframes up { 0%, 100% { transform: translateY(4px); } 50% { transform: translateY(-6px); } }
-  @media (prefers-reduced-motion: reduce) { .arrow { animation: none; } }
+  .fig { margin: 22px auto 4px; max-width: 470px; text-align: left; }
+  .fig .win { border: 1px solid #e3d3da; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.06); pointer-events: none; user-select: none; }
+  .fig .row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; font-size: .78rem; color: #9a8790; }
+  .fig .tabs { background: #f1eaee; }
+  .fig .tab { background: #fff; border-radius: 8px 8px 0 0; padding: 2px 12px; margin-bottom: -7px; }
+  .fig .addr { background: #fff; }
+  .fig .addr span { flex: 1; background: #f4eff1; border-radius: 999px; padding: 2px 12px; }
+  .fig .bms { background: #fff; border-top: 1px solid #f0e6ea; border-bottom: 1px solid #f0e6ea; position: relative; }
+  .fig .chip { background: #f4eff1; border-radius: 6px; padding: 1px 8px; }
+  .fig .chip.new { background: var(--pink); color: #fff; font-weight: 700; box-shadow: 0 0 0 3px var(--pink-l); animation: pop 2s ease-in-out infinite; }
+  @keyframes pop { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .fig .page { height: 34px; background: repeating-linear-gradient(90deg, #faf6f8 0 40px, #fff 40px 80px); }
+  .fig .label { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--pink-d); font-weight: 700; font-size: .78rem; }
+  .fig figcaption { margin-top: 8px; font-size: .86rem; color: var(--muted); text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .fig .chip.new { animation: none; } }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: #3d2430; color: #fff; padding: 12px 20px; border-radius: 14px; font-size: .95rem; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: calc(100vw - 32px); display: none; z-index: 10; }
   .bm { display: inline-flex; align-items: center; gap: 8px; padding: 16px 34px; background: var(--pink); color: #fff; border-radius: 999px; font-weight: 800; font-size: 1.2rem; text-decoration: none; box-shadow: 0 6px 0 var(--pink-d); cursor: grab; transition: transform .1s; user-select: none; }
   .bm:active { transform: translateY(3px); box-shadow: 0 3px 0 var(--pink-d); cursor: grabbing; }
   .hint { color: var(--muted); font-size: .9rem; margin-top: 16px !important; }
@@ -85,11 +95,18 @@
 <main class="wrap">
   <section class="card install">
     <h2><span class="num">1</span>ブックマークに登録する</h2>
-    <p>はじめの1回だけ。PCのブラウザで、<br>下のボタンを<b>ブックマークバーへドラッグ</b>してください。</p>
-    <div class="bar" aria-hidden="true"><span class="dots"><i></i><i></i><i></i></span>ブックマークバー（ここにドロップ）</div>
-    <div class="arrow" aria-hidden="true">⬆</div>
+    <p>はじめの1回だけ。PCのブラウザで、下のボタンをつかんで<br><b>ブラウザの一番上にあるブックマークバー</b>まで持っていって離してください。</p>
     <a class="bm" href="javascript:(async()=&gt;{ if(!/(%5E|%5C.)booth%5C.pm$/.test(location.hostname)){alert(&#x27;BOOTH%E3%81%AE%E3%83%9A%E3%83%BC%E3%82%B8%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const m=document.querySelector(&#x27;meta[name=csrf-token]&#x27;);if(!m){alert(&#x27;BOOTH%E3%81%AB%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%81%97%E3%81%9F%E7%8A%B6%E6%85%8B%E3%81%A7%E6%8A%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} const code=(prompt(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%82%92%E8%B2%BC%E3%81%A3%E3%81%A6%E3%81%AD&#x27;)||&#x27;&#x27;).trim();if(!code)return; const p=code.split(&#x27;.&#x27;);if(p[0]!==&#x27;BC1&#x27;||p.length!==3){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AE%E5%BD%A2%E3%81%8C%E3%81%A1%E3%81%8C%E3%81%86%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;} const list=[];let sum=0; for(const g of p[1].split(&#x27;|&#x27;)){const[s,ids]=g.split(&#x27;:&#x27;);if(!/%5E[a-z0-9-]+$/.test(s||&#x27;&#x27;)||!ids){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}for(const x of ids.split(&#x27;,&#x27;)){const v=parseInt(x,36);if(!(v&gt;0)){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E5%A3%8A%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%BF%E3%81%9F%E3%81%84&#x27;);return;}sum+=v;list.push([s,v]);}} if((sum%251296).toString(36).padStart(2,&#x27;0&#x27;)!==p[2]){alert(&#x27;%E3%81%8A%E4%BC%9A%E8%A8%88%E3%82%B3%E3%83%BC%E3%83%89%E3%81%8C%E9%80%94%E4%B8%AD%E3%81%A7%E5%88%87%E3%82%8C%E3%81%A6%E3%82%8B%E3%81%8B%E3%82%82%E3%80%82%E3%82%82%E3%81%86%E4%B8%80%E5%BA%A6%E3%82%B3%E3%83%94%E3%83%BC%E3%81%97%E3%81%A6%E3%81%AD&#x27;);return;} if(list.length&gt;50){alert(&#x27;%E4%B8%80%E5%BA%A6%E3%81%AB%E5%85%A5%E3%82%8C%E3%82%89%E3%82%8C%E3%82%8B%E3%81%AE%E3%81%AF50%E5%80%8B%E3%81%BE%E3%81%A7%E3%81%A0%E3%82%88&#x27;);return;} const box=document.createElement(&#x27;div&#x27;);box.style.cssText=&#x27;position:fixed;z-index:99999;left:50%25;top:30%25;transform:translate(-50%25,-50%25);background:%23fff0f6;border:4px solid %23ff5fa2;border-radius:24px;padding:24px 32px;font:bold 18px sans-serif;color:%23c2185b;box-shadow:0 8px 30px %230004;text-align:center;white-space:pre-line&#x27;;document.body.appendChild(box); let i=0;const shops=[]; for(const[s,v]of list){i++;box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%A6%E3%82%8B%E3%82%88%E2%80%A6 &#x27;+i+&#x27;/&#x27;+list.length;if(!shops.includes(s))shops.push(s); const f=new FormData();f.append(&#x27;_method&#x27;,&#x27;patch&#x27;);f.append(&#x27;cart_item[variation_id]&#x27;,v);f.append(&#x27;authenticity_token&#x27;,m.content); try{await fetch(&#x27;https://&#x27;+s+&#x27;.booth.pm/cart?added_to_cart=true&amp;via=market&#x27;,{method:&#x27;POST&#x27;,body:f,credentials:&#x27;include&#x27;,mode:&#x27;no-cors&#x27;});}catch(e){} await new Promise(r=&gt;setTimeout(r,400));} box.textContent=&#x27;%E3%82%AB%E3%83%BC%E3%83%88%E3%81%AB%E5%85%A5%E3%82%8C%E3%81%9F%E3%82%88%EF%BC%81 &#x27;+list.length+&#x27;%E3%81%93%EF%BC%88&#x27;+shops.join(&#x27; / &#x27;)+&#x27;%EF%BC%89%5Cn%E3%82%AB%E3%83%BC%E3%83%88%E3%82%92%E9%96%8B%E3%81%8F%E3%81%AD%E2%80%A6&#x27;; setTimeout(()=&gt;location.href=&#x27;https://booth.pm/carts&#x27;,1500); })();" onclick="alert('このボタンはクリックではなく、ブックマークバーへドラッグして登録してね');return false;">🛒 BOOTHお会計</a>
     <p class="hint">ブックマークバーが見えないときは <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>（Macは <kbd>⌘</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>）</p>
+    <figure class="fig" aria-label="ブックマークバーの場所の図">
+      <div class="win" aria-hidden="true">
+        <div class="row tabs"><span class="tab">BOOTH お会計</span></div>
+        <div class="row addr">← → ⟳ <span>https://…</span></div>
+        <div class="row bms"><span class="chip">📁 よく見る</span><span class="chip new">🛒 BOOTHお会計</span><span class="label">← ここがブックマークバー</span></div>
+        <div class="page"></div>
+      </div>
+      <figcaption>図：ブラウザの<b>一番上</b>、アドレスバーのすぐ下の列にドロップします（この図にドロップしても登録されません）</figcaption>
+    </figure>
     <details>
       <summary>ドラッグできないとき（手で登録する）</summary>
       <ol>
@@ -131,5 +148,17 @@
 </main>
 
 <footer>BOOTH・ピクシブ株式会社とは関係のない個人のツールです。BOOTHの仕様が変わると動かなくなることがあります。</footer>
+<div class="toast" id="toast">ページの中ではなく、ブラウザの<b>一番上のブックマークバー</b>まで持っていって離してね</div>
+<script>
+  (function () {
+    var bm = document.querySelector('.bm'), t = document.getElementById('toast'), timer;
+    bm.addEventListener('dragend', function (e) {
+      // Dropped inside the page (not on the browser's bookmark bar): explain where to drop.
+      if (e.clientY > 0 && e.clientY < window.innerHeight && e.clientX > 0 && e.clientX < window.innerWidth) {
+        t.style.display = 'block'; clearTimeout(timer); timer = setTimeout(function () { t.style.display = 'none'; }, 5000);
+      }
+    });
+  })();
+</script>
 </body>
 </html>
